@@ -3,15 +3,6 @@
  * Árvore-B Paginada de Ordem 3 para Indexação de Banco de Dados de Imagens
  * Estrutura de Dados II - Trabalho 2
  * ============================================================================
- * 
- * Características:
- * - Ordem 3 (máximo 2 chaves por nó, 3 filhos)
- * - Raiz virtualizada (sempre em RAM)
- * - Índice e dados em arquivos binários separados
- * - Ordenação por nome de arquivo e limiar
- * - Inserção múltipla de limiares
- * - Remoção física de chaves
- * - Compactação do arquivo de dados
  */
 
 //Comando para compilação: gcc -Wall -Wextra -std=c11 -O2 -o arvore_b.exe arvore_b.c; if ($?) { Write-Host "[OK] Compilado com sucesso!" -ForegroundColor Green } else { Write-Host "[ERRO] Falha na compilacao" -ForegroundColor Red }
@@ -82,7 +73,7 @@ typedef struct {
 typedef struct {
     FILE *arquivo_indice;
     FILE *arquivo_dados;
-    Pagina *raiz_ram;                    // Raiz virtualizada
+    Pagina *raiz_ram;                    
     CabecalhoIndice cabecalho;
 } BancoDados;
 
@@ -199,15 +190,7 @@ bool buscar(BancoDados *bd, Chave *chave, Chave *resultado) {
     return false;
 }
 
-/* ============================================================================
- * FUNÇÕES DE INSERÇÃO
- * ============================================================================ */
-
-/**
- * Divide um filho cheio durante a inserção
- * Para ordem 3: filho_cheio tem [K0, K1]
- * Resultado: filho_cheio=[K0], pai recebe K1, novo_filho=[]
- */
+//Funções de inserção
 void dividir_filho(BancoDados *bd, Pagina *pai, int indice, Pagina *filho_cheio) {
     Pagina *novo_filho = criar_pagina(filho_cheio->eh_folha);
     novo_filho->num_chaves = 0;  // Inicialmente vazio
@@ -316,13 +299,7 @@ void inserir(BancoDados *bd, Chave *chave) {
     escrever_pagina(bd->arquivo_indice, raiz, raiz->offset_proprio);
 }
 
-/* ============================================================================
- * FUNÇÕES DE REMOÇÃO
- * ============================================================================ */
-
-/**
- * Obtém a chave predecessora (maior chave da subárvore esquerda)
- */
+//Funções de remoção
 Chave obter_predecessor(BancoDados *bd, Pagina *pagina, int idx) {
     Pagina *atual = ler_pagina(bd->arquivo_indice, pagina->filhos[idx]);
     while (!atual->eh_folha) {
@@ -688,13 +665,7 @@ bool remover(BancoDados *bd, Chave *chave) {
     return true;
 }
 
-/* ============================================================================
- * FUNÇÕES DE PERCURSO
- * ============================================================================ */
-
-/**
- * Percurso em ordem (in-order) - recursivo
- */
+// Funções de percurso
 void percurso_em_ordem_recursivo(BancoDados *bd, Pagina *pagina) {
     if (pagina == NULL) return;
     
@@ -727,13 +698,7 @@ void percurso_em_ordem(BancoDados *bd) {
     printf("============================================\n\n");
 }
 
-/* ============================================================================
- * FUNÇÃO DE VISUALIZAÇÃO DE PÁGINAS (DEBUG)
- * ============================================================================ */
-
-/**
- * Imprime o conteúdo de uma página
- */
+// Funções de visualização de páginas
 void imprimir_pagina(Pagina *pagina, int num_pagina) {
     printf("Página [%d]: (offset: %ld, folha: %s, chaves: %d)\n", 
            num_pagina, 
@@ -781,13 +746,7 @@ void visualizar_paginas(BancoDados *bd) {
     printf("=========================================\n\n");
 }
 
-/* ============================================================================
- * FUNÇÕES DE GERENCIAMENTO DE IMAGENS PGM
- * ============================================================================ */
-
-/**
- * Aplica limiarização em uma imagem
- */
+// Funções de manipulação de imagens
 void aplicar_limiarizacao(RegistroImagem *img_orig, RegistroImagem *img_bin, int limiar) {
     *img_bin = *img_orig;
     img_bin->limiar = limiar;
@@ -908,13 +867,7 @@ bool exportar_pgm(RegistroImagem *img, const char *nome_saida, bool formato_p2) 
     return true;
 }
 
-/* ============================================================================
- * FUNÇÕES DE COMPACTAÇÃO
- * ============================================================================ */
-
-/**
- * Estrutura auxiliar para coletar chaves
- */
+// Funções de compactação
 typedef struct {
     Chave *chaves;
     int num_chaves;
@@ -1091,7 +1044,7 @@ void compactar(BancoDados *bd) {
     // Atualiza offsets em todas as páginas da árvore (mantendo estrutura)
     atualizar_offsets_recursivo(bd, bd->raiz_ram, &lista);
     
-    // === COMPACTAÇÃO DO ARQUIVO DE ÍNDICE ===
+    // Compacta o arquivo de índice
     printf("Compactando arquivo de indice...\n");
     
     // Cria arquivo temporário para índice
@@ -1135,13 +1088,7 @@ void compactar(BancoDados *bd) {
     printf("Paginas validas: %d (altura: %d)\n\n", novo_cabecalho.num_paginas, novo_cabecalho.altura);
 }
 
-/* ============================================================================
- * FUNÇÕES DE INICIALIZAÇÃO E FINALIZAÇÃO
- * ============================================================================ */
-
-/**
- * Inicializa o banco de dados
- */
+// Funções de inicialização e finalização do banco de dados
 BancoDados* inicializar_banco() {
     BancoDados *bd = malloc(sizeof(BancoDados));
     
@@ -1196,13 +1143,7 @@ void finalizar_banco(BancoDados *bd) {
     free(bd);
 }
 
-/* ============================================================================
- * FUNÇÕES DE INTERFACE COM O USUÁRIO
- * ============================================================================ */
-
-/**
- * Inserção múltipla: uma imagem com vários limiares
- */
+// Funções de interface do usuário
 void inserir_multiplos_limiares(BancoDados *bd) {
     char nome_arquivo[TAM_NOME_ARQUIVO];
     printf("\nNome do arquivo PGM: ");
@@ -1398,10 +1339,7 @@ void exibir_menu() {
     printf("Opcao: ");
 }
 
-/* ============================================================================
- * MAIN
- * ============================================================================ */
-
+// main function
 int main() {
     printf("===================================================\n");
     printf("  Arvore-B Paginada de Ordem 3\n");

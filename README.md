@@ -262,15 +262,6 @@ max_valor
 - Valores de pixel: 0-255 (8 bits)
 - Ordem fixa: 3 (não configurável)
 
-## Testes Sugeridos
-
-1. **Teste de Inserção**: Inserir 10 imagens com 3 limiares cada
-2. **Teste de Split**: Forçar divisão de nós (>2 chaves)
-3. **Teste de Remoção**: Remover e verificar redistribuição
-4. **Teste de Merge**: Remover até forçar merge de nós
-5. **Teste de Compactação**: Inserir 20, remover 10, compactar
-6. **Teste de Persistência**: Fechar e reabrir banco
-
 ## Estrutura do Código
 
 ```
